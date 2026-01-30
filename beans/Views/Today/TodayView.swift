@@ -94,19 +94,55 @@ struct TodayView: View {
 
     // Shown after completing today's reflection
     private func completedState() -> some View {
-        VStack(spacing: BeansSpacing.md) {
-            Text("🎉")
-                .font(.system(size: 64))
+        let attempt = attempts.first { $0.date.startOfDay == Date().startOfDay }
+
+        return VStack(spacing: BeansSpacing.md) {
+            // Illustration or emoji from the challenge
+            if let challenge = todayChallenge {
+                if let name = challenge.illustration {
+                    Image(name)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 140)
+                } else {
+                    Text(challenge.emoji)
+                        .font(.system(size: 64))
+                }
+            }
 
             Text("You did it!")
                 .font(BeansFont.title2)
                 .foregroundStyle(BeansColor.textPrimary)
+
+            // Echo back what they completed
+            if let challenge = todayChallenge {
+                Text(challenge.title)
+                    .font(BeansFont.headline)
+                    .foregroundStyle(BeansColor.textSecondary)
+            }
+
+            // Echo back their feeling
+            if let feeling = attempt?.feeling {
+                HStack(spacing: BeansSpacing.xs) {
+                    Text(feeling.rawValue)
+                        .font(.system(size: 32))
+                    Text(feeling.displayName)
+                        .font(BeansFont.callout)
+                        .foregroundStyle(BeansColor.textSecondary)
+                }
+                .padding(.horizontal, BeansSpacing.sm)
+                .padding(.vertical, BeansSpacing.xs)
+                .background(BeansColor.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
+                .shadow(color: BeansShadow.card, radius: 6, y: 2)
+            }
 
             Text("Come back tomorrow for your next challenge.")
                 .font(BeansFont.callout)
                 .foregroundStyle(BeansColor.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, BeansSpacing.lg)
+                .padding(.top, BeansSpacing.xs)
         }
     }
 

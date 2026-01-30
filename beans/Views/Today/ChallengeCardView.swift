@@ -32,13 +32,14 @@ struct ChallengeCardView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 280)
-                .clipped()
+                .padding(-10)
                 .offset(y: bobOffset)
                 .onAppear {
                     withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
                         bobOffset = -5
                     }
                 }
+                .clipped()
 
                 // Bottom scrim
                 LinearGradient(

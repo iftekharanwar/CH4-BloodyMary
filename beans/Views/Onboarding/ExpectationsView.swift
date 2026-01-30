@@ -36,7 +36,7 @@ struct ExpectationsView: View {
                             if i < emojis.count - 1 {
                                 Image(systemName: "chevron.right")
                                     .font(.system(size: 12, weight: .medium))
-                                    .foregroundStyle(BeansColor.primary.opacity(0.4))
+                                    .foregroundStyle(BeansColor.textSecondary.opacity(0.6))
                                     .opacity(visibleEmoji > i + 1 ? 1.0 : 0.0)
                                     .animation(.easeIn(duration: 0.3).delay(Double(i + 1) * 0.25), value: visibleEmoji)
                                     .frame(width: 16)

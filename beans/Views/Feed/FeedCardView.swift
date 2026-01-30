@@ -59,18 +59,14 @@ struct FeedCardView: View {
                     .padding(.bottom, BeansSpacing.sm)
             }
 
-            // Divider
-            Rectangle()
-                .fill(BeansColor.textSecondary.opacity(0.12))
-                .frame(height: 1)
-                .padding(.bottom, BeansSpacing.sm)
-
-            // Reactions
-            HStack(spacing: BeansSpacing.sm) {
-                ReactionPill(emoji: "❤️", count: 0)
-                ReactionPill(emoji: "💪", count: 0)
-                ReactionPill(emoji: "😂", count: 0)
-            }
+            // Category tag
+            Text(challenge.category)
+                .font(BeansFont.caption2)
+                .foregroundStyle(BeansColor.textSecondary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(BeansColor.background)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
         }
         .padding(BeansSpacing.md)
         .background(BeansColor.cardBackground)
@@ -79,27 +75,6 @@ struct FeedCardView: View {
     }
 }
 
-struct ReactionPill: View {
-    let emoji: String
-    let count: Int
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Text(emoji)
-                .font(.system(size: 14))
-
-            if count > 0 {
-                Text("\(count)")
-                    .font(BeansFont.caption2)
-                    .foregroundStyle(BeansColor.textSecondary)
-            }
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(BeansColor.background)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
-    }
-}
 
 #Preview {
     let sampleChallenge = Challenge(

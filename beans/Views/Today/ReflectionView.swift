@@ -50,30 +50,14 @@ struct ReflectionView: View {
                     .foregroundStyle(BeansColor.textPrimary)
                     .padding(.bottom, BeansSpacing.md)
 
-                // Emoji picker — large, tappable
-                HStack(spacing: BeansSpacing.md) {
-                    ForEach(Attempt.Feeling.allCases, id: \.self) { feeling in
-                        Button {
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.5)) {
-                                selectedFeeling = feeling
-                            }
-                            HapticFeedback.selection()
-
-                            // Confetti on good feelings
-                            if feeling == .nice || feeling == .amazing {
-                                showConfetti = true
-                            }
-                        } label: {
-                            Text(feeling.rawValue)
-                                .font(.system(size: selectedFeeling == feeling ? 56 : 44))
-                                .scaleEffect(selectedFeeling == feeling ? 1.15 : 1.0)
-                                .opacity(selectedFeeling == nil || selectedFeeling == feeling ? 1.0 : 0.3)
-                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: selectedFeeling)
+                // Emoji picker
+                EmojiPicker(selection: $selectedFeeling)
+                    .padding(.bottom, BeansSpacing.md)
+                    .onChange(of: selectedFeeling) { _, newValue in
+                        if newValue == .nice || newValue == .amazing {
+                            showConfetti = true
                         }
-                        .buttonStyle(.plain)
                     }
-                }
-                .padding(.bottom, BeansSpacing.md)
 
                 // Label for selected feeling
                 if let feeling = selectedFeeling {

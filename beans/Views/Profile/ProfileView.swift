@@ -112,7 +112,7 @@ struct ProfileView: View {
         }
         .padding(.vertical, BeansSpacing.md)
         .frame(maxWidth: .infinity)
-        .background(BeansColor.cardBackground)
+        .background(BeansColor.secondary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: BeansRadius.lg))
         .shadow(color: BeansShadow.card, radius: 8, y: 3)
     }

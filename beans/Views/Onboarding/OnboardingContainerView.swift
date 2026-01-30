@@ -13,6 +13,28 @@ struct OnboardingContainerView: View {
             BeansColor.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
+                // Back button (hidden on first page)
+                HStack {
+                    if currentPage > 0 {
+                        Button {
+                            currentPage -= 1
+                            HapticFeedback.light()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 14, weight: .medium))
+                                Text("Back")
+                                    .font(BeansFont.callout)
+                            }
+                            .foregroundStyle(BeansColor.textSecondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, BeansSpacing.lg)
+                .padding(.top, BeansSpacing.md)
+
                 switch currentPage {
                 case 0:
                     WelcomeView(currentPage: $currentPage)
