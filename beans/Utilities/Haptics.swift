@@ -15,32 +15,11 @@ enum HapticFeedback {
         generator.impactOccurred()
     }
 
-    /// Medium impact feedback
-    static func medium() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.prepare()
-        generator.impactOccurred()
-    }
-
-    /// Heavy impact feedback
-    static func heavy() {
-        let generator = UIImpactFeedbackGenerator(style: .heavy)
-        generator.prepare()
-        generator.impactOccurred()
-    }
-
     /// Success notification
     static func success() {
         let generator = UINotificationFeedbackGenerator()
         generator.prepare()
         generator.notificationOccurred(.success)
-    }
-
-    /// Warning notification
-    static func warning() {
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(.warning)
     }
 
     /// Error notification

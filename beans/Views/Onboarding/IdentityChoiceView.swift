@@ -19,7 +19,7 @@ struct IdentityChoiceView: View {
         VStack(spacing: 0) {
             Spacer()
 
-            // Emoji avatar
+            // Avatar
             ZStack {
                 Circle()
                     .fill(
@@ -29,8 +29,9 @@ struct IdentityChoiceView: View {
                     )
                     .frame(width: 120, height: 120)
 
-                Text(isAnonymous ? "🕶" : "🧑")
-                    .font(.system(size: 56))
+                Image(systemName: isAnonymous ? "person.crop.circle.badge.questionmark" : "person.crop.circle.fill")
+                    .font(.system(size: 48, weight: .medium))
+                    .foregroundStyle(isAnonymous ? BeansColor.primary : BeansColor.secondary)
                     .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isAnonymous)
             }
             .animation(.easeInOut(duration: 0.3), value: isAnonymous)

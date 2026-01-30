@@ -22,15 +22,23 @@ final class Challenge {
     var createdAt: Date
 
     enum Difficulty: String, Codable {
-        case easy = "🌱"
-        case medium = "🌿"
-        case hard = "🌳"
+        case easy
+        case medium
+        case hard
 
         var displayName: String {
             switch self {
             case .easy: return "Easy"
             case .medium: return "Medium"
             case .hard: return "Hard"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .easy: return "leaf"
+            case .medium: return "leaf.fill"
+            case .hard: return "tree"
             }
         }
     }

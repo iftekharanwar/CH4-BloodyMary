@@ -18,7 +18,6 @@ struct ReflectionView: View {
     @State private var selectedFeeling: Attempt.Feeling? = nil
     @State private var note: String = ""
     @State private var showConfetti = false
-    @State private var submitted = false
 
     private let maxNoteLength = 120
 

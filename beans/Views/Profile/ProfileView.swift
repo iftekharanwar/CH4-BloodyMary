@@ -81,8 +81,9 @@ struct ProfileView: View {
                     )
                     .frame(width: 72, height: 72)
 
-                Text(isAnon ? "🕶" : "🧑")
-                    .font(.system(size: 32))
+                Image(systemName: isAnon ? "person.crop.circle.badge.questionmark" : "person.crop.circle.fill")
+                    .font(.system(size: 28, weight: .medium))
+                    .foregroundStyle(isAnon ? BeansColor.primary : BeansColor.secondary)
             }
 
             Text(progress?.displayName ?? "Anonymous")
@@ -99,8 +100,9 @@ struct ProfileView: View {
 
         return VStack(spacing: BeansSpacing.xs) {
             HStack(spacing: 6) {
-                Text("🔥")
-                    .font(.system(size: 32))
+                Image(systemName: "flame.fill")
+                    .font(.system(size: 28, weight: .medium))
+                    .foregroundStyle(BeansColor.secondary)
                 Text("\(streak)")
                     .font(BeansFont.largeTitle)
                     .foregroundStyle(BeansColor.secondary)
@@ -215,8 +217,8 @@ struct ActivityRow: View {
                 Text(feeling.rawValue)
                     .font(.system(size: 24))
             } else if !attempt.didTry {
-                Text("⏭")
-                    .font(.system(size: 20))
+                Image(systemName: "forward.end")
+                    .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(BeansColor.textSecondary)
             }
         }

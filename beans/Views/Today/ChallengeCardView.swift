@@ -53,8 +53,8 @@ struct ChallengeCardView: View {
                 // Title + badges overlay
                 VStack(alignment: .leading, spacing: BeansSpacing.xs) {
                     HStack(spacing: BeansSpacing.xs) {
-                        Badge(text: challenge.difficulty.displayName, icon: challenge.difficulty.rawValue, color: difficultyColor)
-                        Badge(text: challenge.estimatedTime, icon: "⏱", color: BeansColor.secondary.opacity(0.85))
+                        Badge(text: challenge.difficulty.displayName, systemIcon: challenge.difficulty.icon, color: difficultyColor)
+                        Badge(text: challenge.estimatedTime, systemIcon: "clock", color: BeansColor.secondary.opacity(0.85))
                     }
 
                     Text(challenge.title)
@@ -117,12 +117,12 @@ struct ChallengeCardView: View {
 
 struct Badge: View {
     let text: String
-    let icon: String
+    let systemIcon: String
     let color: Color
 
     var body: some View {
         HStack(spacing: 4) {
-            Text(icon).font(.system(size: 12))
+            Image(systemName: systemIcon).font(.system(size: 11, weight: .medium))
             Text(text).font(BeansFont.caption)
         }
         .foregroundStyle(.white)

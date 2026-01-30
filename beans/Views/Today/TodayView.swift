@@ -46,8 +46,9 @@ struct TodayView: View {
                     let streak = userProgress.first?.currentStreak ?? 0
                     if streak > 0 {
                         HStack(spacing: 4) {
-                            Text("🔥")
-                                .font(.system(size: 18))
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(BeansColor.secondary)
                             Text("\(streak)")
                                 .font(BeansFont.headline)
                                 .foregroundStyle(BeansColor.secondary)
@@ -76,8 +77,9 @@ struct TodayView: View {
                 } else {
                     // Loading
                     VStack(spacing: BeansSpacing.sm) {
-                        Text("🌱")
-                            .font(.system(size: 48))
+                        Image(systemName: "leaf")
+                            .font(.system(size: 40, weight: .light))
+                            .foregroundStyle(BeansColor.primary)
                         Text("Loading...")
                             .font(BeansFont.callout)
                             .foregroundStyle(BeansColor.textSecondary)

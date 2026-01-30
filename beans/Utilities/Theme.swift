@@ -17,8 +17,6 @@ enum BeansColor {
 
     // Semantic
     static let cardBackground = Color(red: 1.0, green: 0.992, blue: 0.976)   // #FFFDF9 — warm white
-    static let success      = Color(red: 0.482, green: 0.651, blue: 0.545)   // same as primary
-    static let cardShadow   = Color(red: 0.239, green: 0.180, blue: 0.165).opacity(0.08)
 
     // Soft background gradients
     static let gradientSoft = [background, primary.opacity(0.06)]

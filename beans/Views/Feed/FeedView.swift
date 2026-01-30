@@ -56,8 +56,9 @@ struct FeedView: View {
 
     private func emptyState() -> some View {
         VStack(spacing: BeansSpacing.md) {
-            Text("🌍")
-                .font(.system(size: 56))
+            Image(systemName: "globe")
+                .font(.system(size: 48, weight: .light))
+                .foregroundStyle(BeansColor.primary)
 
             Text("Nothing here yet")
                 .font(BeansFont.title3)
