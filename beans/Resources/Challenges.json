@@ -1,0 +1,72 @@
+[
+  {
+    "id": "E8A1B2C3-D4E5-6F78-9A0B-1C2D3E4F5A6B",
+    "title": "Board Game Trap",
+    "description": "Sit in a public place with a multiplayer game set up. Don't invite anyone. Just wait.",
+    "difficulty": "easy",
+    "estimatedTime": "10-30 min",
+    "emoji": "🎲",
+    "illustration": "challenge-boardgame",
+    "category": "Passive Invitation"
+  },
+  {
+    "id": "F1A2B3C4-D5E6-7F89-0A1B-2C3D4E5F6A7B",
+    "title": "Laundry Room Hostage",
+    "description": "Ask someone in a shared space for help with something simple (detergent, the time, directions).",
+    "difficulty": "easy",
+    "estimatedTime": "5 min",
+    "emoji": "🧺",
+    "illustration": "challenge-laundry",
+    "category": "Captive Audience"
+  },
+  {
+    "id": "A1B2C3D4-E5F6-7890-A1B2-C3D4E5F6A7B8",
+    "title": "Culinary Desperate",
+    "description": "Ask someone at the grocery store or farmers market for a recipe recommendation or cooking advice.",
+    "difficulty": "easy",
+    "estimatedTime": "5-10 min",
+    "emoji": "🍝",
+    "illustration": "challenge-culinary",
+    "category": "Ask for Help"
+  },
+  {
+    "id": "B2C3D4E5-F6A7-8901-B2C3-D4E5F6A7B8C9",
+    "title": "Change My Mind",
+    "description": "Set up a small sign in a public space with a lighthearted opinion and invite respectful disagreement.",
+    "difficulty": "medium",
+    "estimatedTime": "20-45 min",
+    "emoji": "🪧",
+    "illustration": "challenge-changemymind",
+    "category": "Invite Disagreement"
+  },
+  {
+    "id": "C3D4E5F6-A7B8-9012-C3D4-E5F6A7B8C9D0",
+    "title": "Post-it War",
+    "description": "Leave encouraging sticky notes in random public places (library books, bathroom mirrors, bus stops).",
+    "difficulty": "easy",
+    "estimatedTime": "15 min",
+    "emoji": "🪟",
+    "illustration": "challenge-postit",
+    "category": "Silent Connection"
+  },
+  {
+    "id": "D4E5F6A7-B8C9-0123-D4E5-F6A7B8C9D0E1",
+    "title": "Fake Smoker Zone",
+    "description": "Stand near a social gathering space without participating. Make yourself available for conversation.",
+    "difficulty": "medium",
+    "estimatedTime": "10-20 min",
+    "emoji": "🚬",
+    "illustration": "challenge-socialspace",
+    "category": "Enter Social Spaces"
+  },
+  {
+    "id": "E5F6A7B8-C9D0-1234-E5F6-A7B8C9D0E1F2",
+    "title": "Underground Barber",
+    "description": "Offer to teach someone a simple skill you have in exchange for learning something from them.",
+    "difficulty": "hard",
+    "estimatedTime": "30+ min",
+    "emoji": "✂️",
+    "illustration": "challenge-skillswap",
+    "category": "Skill Swap"
+  }
+]
