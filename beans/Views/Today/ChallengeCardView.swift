@@ -10,67 +10,148 @@ struct ChallengeCardView: View {
     let onAccept: () -> Void
     let onSkip: () -> Void
 
+    @State private var revealed = false
+    @State private var bowlBurst = false
+    @State private var shakeOffset: CGFloat = 0
+    @State private var breathe = false
+
     var body: some View {
-        VStack(spacing: BeansSpacing.lg) {
-
-            // Challenge card — image + description unified
-            VStack(alignment: .leading, spacing: 0) {
-                // Hero image
-                ZStack(alignment: .bottom) {
-                    Group {
-                        if let name = challenge.illustration {
-                            Image(name)
-                                .resizable()
-                                .scaledToFill()
-                        } else {
-                            BeansColor.primary.opacity(0.15)
-                                .overlay {
-                                    Text(challenge.emoji)
-                                        .font(.system(size: 72))
-                                }
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-                    .clipped()
-
-                    // Bottom scrim
-                    LinearGradient(
-                        colors: [Color.black.opacity(0), Color.black.opacity(0.45)],
-                        startPoint: .center,
-                        endPoint: .bottom
-                    )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-
-                    // Badges overlay at the bottom of the image
-                    HStack(spacing: BeansSpacing.xs) {
-                        Badge(text: challenge.difficulty.displayName, systemIcon: challenge.difficulty.icon, color: difficultyColor)
-                        Badge(text: challenge.estimatedTime, systemIcon: "clock", color: BeansColor.secondary.opacity(0.85))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, BeansSpacing.md)
-                    .padding(.bottom, BeansSpacing.sm)
-                }
-
-                // Title + description on warm white, below the image
-                VStack(alignment: .leading, spacing: BeansSpacing.xs) {
-                    Text(challenge.title)
-                        .font(BeansFont.title2)
-                        .foregroundStyle(BeansColor.textPrimary)
-
-                    Text(challenge.challengeDescription)
-                        .font(BeansFont.callout)
-                        .foregroundStyle(BeansColor.textSecondary)
-                        .lineSpacing(3)
-                }
-                .padding(BeansSpacing.md)
-                .background(BeansColor.cardBackground)
+        ZStack {
+            if !revealed {
+                bowlView
+            } else {
+                challengeRevealView
+                    .transition(.opacity)
             }
-            .clipShape(RoundedRectangle(cornerRadius: BeansRadius.xl))
-            .shadow(color: BeansShadow.lifted, radius: 14, y: 8)
+        }
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: revealed)
+    }
 
-            // CTA
+    // MARK: - Bowl (pre-reveal)
+
+    private var bowlView: some View {
+        VStack(spacing: BeansSpacing.lg) {
+            Spacer()
+
+            Text("Ready for a challenge?")
+                .font(BeansFont.title2)
+                .foregroundStyle(BeansColor.textPrimary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, BeansSpacing.lg)
+
+            Spacer(minLength: BeansSpacing.md)
+
+            // Bowl illustration
+            Image("bowl")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 300)
+                .scaleEffect(bowlBurst ? 1.5 : (breathe ? 1.03 : 1.0))
+                .opacity(bowlBurst ? 0.0 : 1.0)
+                .rotationEffect(.degrees(shakeOffset))
+                .animation(.spring(response: 0.35, dampingFraction: 0.5), value: bowlBurst)
+                .animation(.easeInOut(duration: 0.1), value: shakeOffset)
+                .animation(
+                    .easeInOut(duration: 2.2).repeatForever(autoreverses: true),
+                    value: breathe
+                )
+                .onAppear {
+                    breathe = true
+                }
+
+            Spacer(minLength: BeansSpacing.md)
+
+            // Shake button
+            Button {
+                HapticFeedback.success()
+
+                // Shake wiggle sequence: left → right → left → right → center
+                withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = -10 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 10 }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = -7 }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) {
+                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 5 }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 0 }
+                }
+
+                // Burst after wiggle settles
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.4)) {
+                        bowlBurst = true
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                        revealed = true
+                    }
+                }
+            } label: {
+                Text("Shake it")
+                    .font(BeansFont.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(BeansColor.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
+                    .shadow(color: BeansShadow.button, radius: 8, y: 4)
+            }
+            .buttonStyle(ScaleButtonStyle())
+            .padding(.horizontal, BeansSpacing.lg)
+
+            Spacer()
+        }
+    }
+
+    // MARK: - Challenge reveal (post-burst)
+
+    private var challengeRevealView: some View {
+        VStack(spacing: 0) {
+            Spacer()
+
+            // Illustration at the top with spring scale-in
+            if let name = challenge.illustration {
+                Image(name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 180)
+                    .scaleEffect(revealed ? 1.0 : 0.4)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.6), value: revealed)
+            }
+
+            Spacer(minLength: BeansSpacing.md)
+
+            // Title
+            Text(challenge.title)
+                .font(BeansFont.title)
+                .foregroundStyle(BeansColor.textPrimary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, BeansSpacing.lg)
+
+            // Description
+            Text(challenge.challengeDescription)
+                .font(BeansFont.callout)
+                .foregroundStyle(BeansColor.textSecondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
+                .padding(.horizontal, BeansSpacing.xl)
+                .padding(.top, BeansSpacing.xs)
+
+            // Badges
+            HStack(spacing: BeansSpacing.xs) {
+                Badge(text: challenge.difficulty.displayName, systemIcon: challenge.difficulty.icon, color: difficultyColor)
+                Badge(text: challenge.estimatedTime, systemIcon: "clock", color: BeansColor.secondary.opacity(0.85))
+            }
+            .padding(.top, BeansSpacing.md)
+
+            Spacer()
+
+            // CTA buttons
             VStack(spacing: BeansSpacing.xs) {
                 Button {
                     onAccept()
@@ -87,18 +168,31 @@ struct ChallengeCardView: View {
                 .buttonStyle(ScaleButtonStyle())
 
                 Button {
-                    onSkip()
+                    // Reset back to bowl with a new challenge
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                        revealed = false
+                        bowlBurst = false
+                        shakeOffset = 0
+                        breathe = false
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        onSkip()
+                        breathe = true
+                    }
                 } label: {
-                    Text("Skip today")
+                    Text("Skip, show another")
                         .font(BeansFont.caption)
                         .foregroundStyle(BeansColor.textSecondary)
                 }
                 .buttonStyle(.plain)
                 .padding(.top, 2)
             }
+            .padding(.horizontal, BeansSpacing.lg)
+            .padding(.bottom, BeansSpacing.xl)
         }
-        .padding(.horizontal, BeansSpacing.lg)
     }
+
+    // MARK: - Helpers
 
     private var difficultyColor: Color {
         switch challenge.difficulty {

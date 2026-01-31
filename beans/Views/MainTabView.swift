@@ -38,12 +38,12 @@ struct MainTabView: View {
                 TabView {
                     TodayView()
                         .tabItem {
-                            Label("Today", systemImage: "brain.head.profile")
+                            Label("Today", systemImage: "sun.and.horizon")
                         }
 
                     FeedView()
                         .tabItem {
-                            Label("Feed", systemImage: "globe")
+                            Label("Feed", systemImage: "clock.arrow.circlepath")
                         }
 
                     ProfileView()
