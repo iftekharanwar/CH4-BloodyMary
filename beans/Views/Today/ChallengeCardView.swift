@@ -10,71 +10,65 @@ struct ChallengeCardView: View {
     let onAccept: () -> Void
     let onSkip: () -> Void
 
-    @State private var bobOffset: CGFloat = 0
-
     var body: some View {
         VStack(spacing: BeansSpacing.lg) {
 
-            // Hero card
-            ZStack(alignment: .bottom) {
-                Group {
-                    if let name = challenge.illustration {
-                        Image(name)
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        BeansColor.primary.opacity(0.15)
-                            .overlay {
-                                Text(challenge.emoji)
-                                    .font(.system(size: 80))
-                            }
+            // Challenge card — image + description unified
+            VStack(alignment: .leading, spacing: 0) {
+                // Hero image
+                ZStack(alignment: .bottom) {
+                    Group {
+                        if let name = challenge.illustration {
+                            Image(name)
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            BeansColor.primary.opacity(0.15)
+                                .overlay {
+                                    Text(challenge.emoji)
+                                        .font(.system(size: 72))
+                                }
+                        }
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 280)
-                .padding(-10)
-                .offset(y: bobOffset)
-                .onAppear {
-                    withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
-                        bobOffset = -5
-                    }
-                }
-                .clipped()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 220)
+                    .clipped()
 
-                // Bottom scrim
-                LinearGradient(
-                    colors: [Color.black.opacity(0), Color.black.opacity(0.5)],
-                    startPoint: .center,
-                    endPoint: .bottom
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: 280)
+                    // Bottom scrim
+                    LinearGradient(
+                        colors: [Color.black.opacity(0), Color.black.opacity(0.45)],
+                        startPoint: .center,
+                        endPoint: .bottom
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 220)
 
-                // Title + badges overlay
-                VStack(alignment: .leading, spacing: BeansSpacing.xs) {
+                    // Badges overlay at the bottom of the image
                     HStack(spacing: BeansSpacing.xs) {
                         Badge(text: challenge.difficulty.displayName, systemIcon: challenge.difficulty.icon, color: difficultyColor)
                         Badge(text: challenge.estimatedTime, systemIcon: "clock", color: BeansColor.secondary.opacity(0.85))
                     }
-
-                    Text(challenge.title)
-                        .font(BeansFont.title)
-                        .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.2), radius: 4, y: 2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, BeansSpacing.md)
+                    .padding(.bottom, BeansSpacing.sm)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Title + description on warm white, below the image
+                VStack(alignment: .leading, spacing: BeansSpacing.xs) {
+                    Text(challenge.title)
+                        .font(BeansFont.title2)
+                        .foregroundStyle(BeansColor.textPrimary)
+
+                    Text(challenge.challengeDescription)
+                        .font(BeansFont.callout)
+                        .foregroundStyle(BeansColor.textSecondary)
+                        .lineSpacing(3)
+                }
                 .padding(BeansSpacing.md)
+                .background(BeansColor.cardBackground)
             }
             .clipShape(RoundedRectangle(cornerRadius: BeansRadius.xl))
             .shadow(color: BeansShadow.lifted, radius: 14, y: 8)
-
-            // Description
-            Text(challenge.challengeDescription)
-                .font(BeansFont.callout)
-                .foregroundStyle(BeansColor.textSecondary)
-                .multilineTextAlignment(.center)
-                .lineSpacing(3)
-                .padding(.horizontal, BeansSpacing.sm)
 
             // CTA
             VStack(spacing: BeansSpacing.xs) {

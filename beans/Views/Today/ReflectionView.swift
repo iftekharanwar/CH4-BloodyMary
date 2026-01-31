@@ -18,121 +18,143 @@ struct ReflectionView: View {
     @State private var selectedFeeling: Attempt.Feeling? = nil
     @State private var note: String = ""
     @State private var showConfetti = false
+    @FocusState private var noteFieldFocused: Bool
 
     private let maxNoteLength = 120
 
     var body: some View {
-        ZStack {
-            // Background
-            LinearGradient(
-                colors: [BeansColor.background, BeansColor.accent.opacity(0.07)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                Spacer()
-
-                // Small illustration thumbnail
-                if let name = challenge.illustration {
-                    Image(name)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 100)
-                        .padding(.bottom, BeansSpacing.md)
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                // Background — tappable to dismiss keyboard
+                LinearGradient(
+                    colors: [BeansColor.background, BeansColor.accent.opacity(0.07)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    noteFieldFocused = false
                 }
 
-                // Casual question
-                Text("How'd it go?")
-                    .font(BeansFont.title2)
-                    .foregroundStyle(BeansColor.textPrimary)
-                    .padding(.bottom, BeansSpacing.md)
+                VStack(spacing: 0) {
+                    // Top section — collapses when keyboard is up
+                    if !noteFieldFocused {
+                        Spacer()
 
-                // Emoji picker
-                EmojiPicker(selection: $selectedFeeling)
-                    .padding(.bottom, BeansSpacing.md)
-                    .onChange(of: selectedFeeling) { _, newValue in
-                        if newValue == .nice || newValue == .amazing {
-                            showConfetti = true
+                        if let name = challenge.illustration {
+                            Image(name)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 100)
+                                .padding(.bottom, BeansSpacing.md)
                         }
-                    }
 
-                // Label for selected feeling
-                if let feeling = selectedFeeling {
-                    Text(feeling.displayName)
-                        .font(BeansFont.headline)
-                        .foregroundStyle(BeansColor.secondary)
-                        .transition(.opacity.combined(with: .scale))
-                        .padding(.bottom, BeansSpacing.sm)
-                }
+                        Text("How'd it go?")
+                            .font(BeansFont.title2)
+                            .foregroundStyle(BeansColor.textPrimary)
+                            .padding(.bottom, BeansSpacing.md)
 
-                // Optional note
-                VStack(alignment: .leading, spacing: 4) {
-                    TextField("What happened? (optional)", text: $note, axis: .vertical)
-                        .font(BeansFont.callout)
-                        .foregroundStyle(BeansColor.textPrimary)
-                        .lineLimit(3)
-                        .padding(BeansSpacing.sm)
-                        .background(BeansColor.cardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
-                        .shadow(color: BeansShadow.card, radius: 6, y: 2)
-                        .onChange(of: note) { _, newValue in
-                            if newValue.count > maxNoteLength {
-                                note = String(newValue.prefix(maxNoteLength))
+                        EmojiPicker(selection: $selectedFeeling)
+                            .padding(.bottom, BeansSpacing.sm)
+
+                        if let feeling = selectedFeeling {
+                            Text(feeling.displayName)
+                                .font(BeansFont.headline)
+                                .foregroundStyle(BeansColor.secondary)
+                                .transition(.opacity.combined(with: .scale))
+                        }
+
+                        Spacer()
+                    } else {
+                        // Compact header when typing — just show the selected feeling
+                        Spacer(minLength: 0)
+
+                        HStack(spacing: BeansSpacing.xs) {
+                            if let feeling = selectedFeeling {
+                                Text(feeling.rawValue)
+                                    .font(.system(size: 28))
+                                Text(feeling.displayName)
+                                    .font(BeansFont.headline)
+                                    .foregroundStyle(BeansColor.secondary)
                             }
                         }
-
-                    Text("\(note.count)/\(maxNoteLength)")
-                        .font(BeansFont.caption2)
-                        .foregroundStyle(BeansColor.textSecondary)
-                }
-                .padding(.horizontal, BeansSpacing.lg)
-
-                Spacer()
-
-                // CTA buttons
-                VStack(spacing: BeansSpacing.xs) {
-                    Button {
-                        saveReflection(didTry: true)
-                    } label: {
-                        Text("Done")
-                            .font(BeansFont.headline)
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(selectedFeeling != nil ? BeansColor.secondary : BeansColor.textSecondary.opacity(0.4))
-                            .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
-                            .shadow(color: selectedFeeling != nil ? BeansShadow.button : .clear, radius: 8, y: 4)
+                        .padding(.top, BeansSpacing.md)
+                        .padding(.bottom, BeansSpacing.sm)
                     }
-                    .buttonStyle(ScaleButtonStyle())
-                    .disabled(selectedFeeling == nil)
 
-                    Button {
-                        saveReflection(didTry: false)
-                    } label: {
-                        Text("Maybe tomorrow")
-                            .font(BeansFont.caption)
+                    // Note field
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField("What happened? (optional)", text: $note, axis: .vertical)
+                            .font(BeansFont.callout)
+                            .foregroundStyle(BeansColor.textPrimary)
+                            .lineLimit(3)
+                            .padding(BeansSpacing.sm)
+                            .background(BeansColor.cardBackground)
+                            .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
+                            .shadow(color: BeansShadow.card, radius: 6, y: 2)
+                            .focused($noteFieldFocused)
+                            .onChange(of: note) { _, newValue in
+                                if newValue.count > maxNoteLength {
+                                    note = String(newValue.prefix(maxNoteLength))
+                                }
+                            }
+
+                        Text("\(note.count)/\(maxNoteLength)")
+                            .font(BeansFont.caption2)
                             .foregroundStyle(BeansColor.textSecondary)
                     }
-                    .buttonStyle(.plain)
-                    .padding(.top, 2)
-                }
-                .padding(.horizontal, BeansSpacing.lg)
-                .padding(.bottom, BeansSpacing.xl)
-            }
+                    .padding(.horizontal, BeansSpacing.lg)
 
-            // Lottie confetti overlay
-            if showConfetti {
-                LottieView {
-                    try await DotLottieFile.named("confetti-celebration")
+                    Spacer(minLength: BeansSpacing.md)
+
+                    // CTA buttons — always visible above keyboard
+                    VStack(spacing: BeansSpacing.xs) {
+                        Button {
+                            noteFieldFocused = false
+                            saveReflection(didTry: true)
+                        } label: {
+                            Text("Done")
+                                .font(BeansFont.headline)
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(selectedFeeling != nil ? BeansColor.secondary : BeansColor.textSecondary.opacity(0.4))
+                                .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
+                                .shadow(color: selectedFeeling != nil ? BeansShadow.button : .clear, radius: 8, y: 4)
+                        }
+                        .buttonStyle(ScaleButtonStyle())
+                        .disabled(selectedFeeling == nil)
+
+                        Button {
+                            noteFieldFocused = false
+                            saveReflection(didTry: false)
+                        } label: {
+                            Text("Maybe tomorrow")
+                                .font(BeansFont.caption)
+                                .foregroundStyle(BeansColor.textSecondary)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 2)
+                    }
+                    .padding(.horizontal, BeansSpacing.lg)
+                    .padding(.bottom, BeansSpacing.xl)
                 }
-                .playing()
-                .allowsHitTesting(false)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
+                .ignoresSafeArea(edges: .bottom)
+
+                // Lottie confetti — fires after Done is tapped, not on feeling selection
+                if showConfetti {
+                    LottieView {
+                        try await DotLottieFile.named("confetti-celebration")
+                    }
+                    .playing(loopMode: .playOnce)
+                    .allowsHitTesting(false)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea()
+                }
             }
         }
+        .ignoresSafeArea(edges: .bottom)
     }
 
     private func saveReflection(didTry: Bool) {
@@ -168,7 +190,12 @@ struct ReflectionView: View {
         try? modelContext.save()
         HapticFeedback.success()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+        // Confetti on positive feelings — fires here, after save, not on selection
+        if didTry && (selectedFeeling == .nice || selectedFeeling == .amazing) {
+            showConfetti = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             onComplete()
         }
     }
