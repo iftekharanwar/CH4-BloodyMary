@@ -18,6 +18,8 @@ struct TodayView: View {
     @State private var showingReflection = false
     @State private var completedToday = false
 
+    @State private var showCompleted = false
+
     var body: some View {
         ZStack {
             // Soft background
@@ -100,62 +102,86 @@ struct TodayView: View {
         let attempt = attempts.first { $0.date.startOfDay == Date().startOfDay }
 
         return ZStack {
-            VStack(spacing: BeansSpacing.md) {
-                // Illustration or emoji from the challenge
-                if let challenge = todayChallenge {
-                    if let name = challenge.illustration {
-                        Image(name)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 140)
-                    } else {
-                        Text(challenge.emoji)
-                            .font(.system(size: 64))
-                    }
-                }
+            VStack(spacing: 0) {
+                Spacer()
 
+                // Header
                 Text("You did it!")
-                    .font(BeansFont.title2)
+                    .font(BeansFont.title)
                     .foregroundStyle(BeansColor.textPrimary)
 
-                // Echo back what they completed
                 if let challenge = todayChallenge {
                     Text(challenge.title)
                         .font(BeansFont.headline)
                         .foregroundStyle(BeansColor.textSecondary)
+                        .padding(.top, BeansSpacing.xs)
                 }
 
-                // Echo back their feeling
-                if let feeling = attempt?.feeling {
-                    HStack(spacing: BeansSpacing.xs) {
-                        Text(feeling.rawValue)
-                            .font(.system(size: 32))
-                        Text(feeling.displayName)
-                            .font(BeansFont.callout)
-                            .foregroundStyle(BeansColor.textSecondary)
+                Spacer(minLength: BeansSpacing.lg)
+
+                // Hero card — illustration + feeling + quote
+                VStack(spacing: 0) {
+                    // Illustration inside the card
+                    if let challenge = todayChallenge {
+                        if let name = challenge.illustration {
+                            Image(name)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 200)
+                                .clipped()
+                        } else {
+                            Text(challenge.emoji)
+                                .font(.system(size: 64))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 160)
+                                .background(BeansColor.primary.opacity(0.08))
+                        }
                     }
-                    .padding(.horizontal, BeansSpacing.sm)
-                    .padding(.vertical, BeansSpacing.xs)
-                    .background(BeansColor.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
-                    .shadow(color: BeansShadow.card, radius: 6, y: 2)
+
+                    // Feeling emoji + quote below illustration
+                    if let feeling = attempt?.feeling {
+                        VStack(spacing: BeansSpacing.sm) {
+                            Text(feeling.rawValue)
+                                .font(.system(size: 48))
+
+                            Text(quoteFor(feeling))
+                                .font(BeansFont.callout)
+                                .foregroundStyle(BeansColor.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.vertical, BeansSpacing.md)
+                        .padding(.horizontal, BeansSpacing.lg)
+                    }
                 }
+                .frame(maxWidth: .infinity)
+                .background(BeansColor.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: BeansRadius.xl))
+                .shadow(color: BeansShadow.lifted, radius: 14, y: 8)
+                .padding(.horizontal, BeansSpacing.lg)
 
-                Text("Come back tomorrow for your next challenge.")
-                    .font(BeansFont.callout)
-                    .foregroundStyle(BeansColor.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, BeansSpacing.lg)
-                    .padding(.top, BeansSpacing.xs)
+                Spacer()
             }
+            .opacity(showCompleted ? 1.0 : 0.0)
+            .animation(.easeOut(duration: 0.4), value: showCompleted)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    showCompleted = true
+                }
+            }
+        }
+    }
 
-            // Lottie confetti plays once over the completed state
-            LottieView {
-                try await DotLottieFile.named("confetti-celebration")
-            }
-            .playing(loopMode: .playOnce)
-            .allowsHitTesting(false)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    private func quoteFor(_ feeling: Attempt.Feeling) -> String {
+        switch feeling {
+        case .awkward:
+            return "Awkward moments are just courage in disguise. You showed up — that's everything."
+        case .neutral:
+            return "Not every try feels amazing. The fact that you did it anyway says a lot about you."
+        case .nice:
+            return "That's the sweet spot. A little uncomfortable, a little rewarding. Keep going."
+        case .amazing:
+            return "This is what happens when you step outside your comfort zone. Remember this feeling."
         }
     }
 

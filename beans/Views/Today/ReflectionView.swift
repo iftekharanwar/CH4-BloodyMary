@@ -108,35 +108,22 @@ struct ReflectionView: View {
 
                     Spacer(minLength: BeansSpacing.md)
 
-                    // CTA buttons — always visible above keyboard
-                    VStack(spacing: BeansSpacing.xs) {
-                        Button {
-                            noteFieldFocused = false
-                            saveReflection(didTry: true)
-                        } label: {
-                            Text("Done")
-                                .font(BeansFont.headline)
-                                .foregroundStyle(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(selectedFeeling != nil ? BeansColor.secondary : BeansColor.textSecondary.opacity(0.4))
-                                .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
-                                .shadow(color: selectedFeeling != nil ? BeansShadow.button : .clear, radius: 8, y: 4)
-                        }
-                        .buttonStyle(ScaleButtonStyle())
-                        .disabled(selectedFeeling == nil)
-
-                        Button {
-                            noteFieldFocused = false
-                            saveReflection(didTry: false)
-                        } label: {
-                            Text("Maybe tomorrow")
-                                .font(BeansFont.caption)
-                                .foregroundStyle(BeansColor.textSecondary)
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.top, 2)
+                    // CTA button — always visible above keyboard
+                    Button {
+                        noteFieldFocused = false
+                        saveReflection(didTry: true)
+                    } label: {
+                        Text("Done")
+                            .font(BeansFont.headline)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(selectedFeeling != nil ? BeansColor.secondary : BeansColor.textSecondary.opacity(0.4))
+                            .clipShape(RoundedRectangle(cornerRadius: BeansRadius.md))
+                            .shadow(color: selectedFeeling != nil ? BeansShadow.button : .clear, radius: 8, y: 4)
                     }
+                    .buttonStyle(ScaleButtonStyle())
+                    .disabled(selectedFeeling == nil)
                     .padding(.horizontal, BeansSpacing.lg)
                     .padding(.bottom, BeansSpacing.xl)
                 }

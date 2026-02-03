@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ChallengeCardView: View {
     let challenge: Challenge
@@ -14,6 +15,8 @@ struct ChallengeCardView: View {
     @State private var bowlBurst = false
     @State private var shakeOffset: CGFloat = 0
     @State private var breathe = false
+    private let shakeCancellable = ShakeDetector.shared.shakeDetected
+        .receive(on: DispatchQueue.main)
 
     var body: some View {
         ZStack {
@@ -63,34 +66,7 @@ struct ChallengeCardView: View {
 
             // Shake button
             Button {
-                HapticFeedback.success()
-
-                // Shake wiggle sequence: left → right → left → right → center
-                withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = -10 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 10 }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
-                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = -7 }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) {
-                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 5 }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
-                    withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 0 }
-                }
-
-                // Burst after wiggle settles
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.4)) {
-                        bowlBurst = true
-                    }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                        revealed = true
-                    }
-                }
+                triggerShake()
             } label: {
                 Text("Shake it")
                     .font(BeansFont.headline)
@@ -103,6 +79,11 @@ struct ChallengeCardView: View {
             }
             .buttonStyle(ScaleButtonStyle())
             .padding(.horizontal, BeansSpacing.lg)
+            .onAppear { ShakeDetector.shared.start() }
+            .onDisappear { ShakeDetector.shared.stop() }
+            .onReceive(shakeCancellable) { _ in
+                triggerShake()
+            }
 
             Spacer()
         }
@@ -193,6 +174,39 @@ struct ChallengeCardView: View {
     }
 
     // MARK: - Helpers
+
+    private func triggerShake() {
+        guard !revealed && !bowlBurst else { return }
+
+        HapticFeedback.success()
+
+        // Wiggle sequence: left → right → left → right → center
+        withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = -10 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+            withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 10 }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) {
+            withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = -7 }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) {
+            withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 5 }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+            withAnimation(.easeInOut(duration: 0.08)) { shakeOffset = 0 }
+        }
+
+        // Burst after wiggle settles
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.4)) {
+                bowlBurst = true
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                revealed = true
+            }
+        }
+    }
 
     private var difficultyColor: Color {
         switch challenge.difficulty {
